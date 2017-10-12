@@ -6,6 +6,9 @@
 
 	This file is part of parser functions.
 	This file contains the implementation of memory variables.
+
+	This parser functions is a modified version of the parser from Schild "C The
+	Complete Reference" Copyright 1995 McGraw-Hill Cook Company International.
 	
     Parser functions is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,6 +39,7 @@ Cparser_func_memory::Cparser_func_memory()
 {
 	head=NULL;
 	m_dim=0;
+	parcget = head;
 }
 
 Cparser_func_memory::~Cparser_func_memory()
@@ -280,5 +284,54 @@ void Cparser_func_memory::assign_memory(char *name, double *mem, long dim)
 			p1->next=aux;
 			m_dim++;
 		}
+	}
+}
+
+int Cparser_func_memory::getVal(double *val, char *name)
+{
+	if (parcget != NULL)
+	{
+		strcpy_s(name, (strlen(parcget->name) +1) * sizeof(char), parcget->name);
+		*val = (parcget->data).get(0);
+		parcget = parcget->next;
+		return 0;
+	}
+	else
+	{
+		name = "\0";
+		return -1;
+	}
+}
+
+void Cparser_func_memory::resetGet()
+{
+	parcget = head;
+}
+
+
+void Cparser_func_memory::deletedata(char *name)
+{
+	struct nod *parc;
+	struct nod *aux, *p1;
+	if (head == NULL) return;
+	if (strcmp(name, head->name) == 0)
+	{
+		aux = head;
+		head = head->next;
+		delete aux;
+		return;
+	}
+	parc = head->next;
+	p1 = head;
+	while (parc != NULL)
+	{
+		if (strcmp(parc->name, name) == 0)
+		{
+			p1->next = parc->next;
+			delete parc;
+			return;
+		}
+		p1 = parc;
+		parc = parc->next;
 	}
 }

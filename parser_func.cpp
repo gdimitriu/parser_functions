@@ -6,6 +6,9 @@
 
 	This file is part of Parser Functions.
 	This file contains the implementation of parser for functions.
+
+	This parser functions is a modified version of the parser from Schild "C The
+	Complete Reference" Copyright 1995 McGraw-Hill Cook Company International.
 	
     Parser Functions is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,11 +53,14 @@ Cparser_func::Cparser_func()
 	math_f[11]=log10;
 	math_f[12]=fabs;
 	error=false;
+	m_aloc = false;
+	m_name = -1;
 }
 
 Cparser_func::~Cparser_func()
 {
 	if(prog!=NULL) free(function);
+	if (m_aloc == true) delete memory;
 }
 
 int Cparser_func::eval_func(double *rez)
@@ -502,17 +508,21 @@ void Cparser_func::setdim(char *s, long dim)
 void Cparser_func::alocate_memory()
 {
 	memory=new Cparser_func_memory();
+	m_aloc = true;
 }
 
 void Cparser_func::delete_memory()
 {
 	memory->deletedata();
 	delete memory;
+	memory = NULL;
+	m_aloc = false;
 }
 
 void Cparser_func::assign_memory(Cparser_func_memory *mem)
 {
 	memory=mem;
+	m_aloc = false;
 }
 
 char * Cparser_func::get_function()
@@ -523,4 +533,65 @@ char * Cparser_func::get_function()
 void Cparser_func::reset_func()
 {
 	prog=function;
+}
+
+int Cparser_func::delvarfunc(char *dead)
+{
+	string func(function);
+	size_t index, index1, index2;
+	size_t i, j, l;
+	index = func.find(dead, 0);
+	if (index == -1) return 1;
+	string tfunc;
+	l = 0;
+	index2 = index;
+	//left operations
+	while (index2>l && func[index2] != '-' && func[index2] != '+') index2--;
+	for (i = l, j = 0; i<index2; i++)
+		tfunc.insert(j, 1, func.at(i));
+	while (index != -1)
+	{
+		index = index + strlen(dead) + 1;
+		//find dimension
+		while (func[index] != ']') index++;
+		index++;
+		index1 = index;
+		//right operations
+		if (index1<func.length()) while (index1 <= func.length() && func[index1] != '-' && func[index1] != '+')
+		{
+			index1++;
+			if (func.length()<index1) break;
+		}
+		if (func.length()>index1) if (tfunc.length() == 0 && func[index1] != '-') index1++;
+		index = func.find(dead, index1);
+		l = index1;
+		//left operations
+		index2 = index;
+		while (index2>l && func[index2] != '-' && func[index2] != '+')
+		{
+			index2--;
+			if (index2<0) break;
+		}
+		for (i = l, j = 0; i<index2; i++)
+			tfunc.insert(j, 1, func[i]);
+	}
+	j = tfunc.length();
+	for (i = index1; i<func.length(); i++, j++)
+		tfunc.insert(j, 1, func[i]);
+	tfunc.resize((tfunc.length() + 1)*sizeof(char));
+	free(function);
+	if (tfunc.length() == 0)
+	{
+		tfunc.empty();
+		tfunc.assign("0.0");
+	}
+	function = (char *)calloc(tfunc.length() + 1, sizeof(char));
+	const char* tmp = tfunc.c_str();
+	strcpy_s(function, (strlen(tmp) + 1) * sizeof(char), tmp);
+	return 0;
+}
+
+void Cparser_func::SetName(long name)
+{
+	m_name = name;
 }

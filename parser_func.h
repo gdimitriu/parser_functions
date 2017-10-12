@@ -6,6 +6,9 @@
 
 	This file is part of Parser Functions.
 	This file contains the definition of parser for functions.
+
+	This parser functions is a modified version of the parser from Schild "C The
+	Complete Reference" Copyright 1995 McGraw-Hill Cook Company International.
 	
     Parser Functions is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,6 +44,8 @@
 class Cparser_func  
 {
 public:
+	void SetName(long name);
+	int delvarfunc(char *dead);
 	void reset_func();
 	char * get_function();
 	void assign_memory(Cparser_func_memory *mem);
@@ -59,6 +64,8 @@ public:
 	void set_function(char *func);
 	int eval_func(double *rez);
 	Cparser_func_memory *memory;
+	char *function;
+	long m_name;
 protected:
 	bool error;
 	double eval_varmd(char *s);
@@ -80,8 +87,8 @@ protected:
 	char simb[80];
 	char tip_simb;
 
+	bool m_aloc;
 	char *prog;
-	char *function;
 	double (*math_f[13])(double arg);
 };
 

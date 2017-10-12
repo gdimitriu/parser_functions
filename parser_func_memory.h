@@ -6,6 +6,9 @@
 
 	This file is part of parser functions.
 	This file contains the definition of memory variables.
+
+	This parser functions is a modified version of the parser from Schild "C The
+	Complete Reference" Copyright 1995 McGraw-Hill Cook Company International.
 	
     Parser functions is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,6 +41,9 @@ private:
 		struct nod *next;
 	};
 public:
+	void deletedata(char *name);
+	int getVal(double *val, char *name);
+	void resetGet();
 	void assign_memory(char *name,double *mem,long dim);
 	void setdim(char *name,long dim);
 	void display(void);
@@ -49,6 +55,7 @@ public:
 	virtual ~Cparser_func_memory();
 private:
 	struct nod *head;
+	struct nod *parcget;
 	long m_dim;
 };
 

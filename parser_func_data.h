@@ -6,6 +6,9 @@
 
 	This file is part of parser functions.
 	This file contains the definition of multidimensional variable.
+
+	This parser functions is a modified version of the parser from Schild "C The
+	Complete Reference" Copyright 1995 McGraw-Hill Cook Company International.
 	
     Parser functions is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

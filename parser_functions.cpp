@@ -44,7 +44,8 @@ int main(int argc, char* argv[])
 		parser->set_function(funct);
 		parser->eval_func(&rez);
 		cout<<rez<<endl;
-		memory.display();
 	} while(*funct);
+	cout << "memory of system:" << endl;
+	memory.display();
 	return 0;
 }
